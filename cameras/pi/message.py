@@ -4,23 +4,31 @@ class MessageData: # root message data class
 class UnicodeMessageData(MessageData):
     def __init__(self,message_string):
         self.message_string = message_string
+    def __str__(self):
+        return f"unicode message '{self.message_string}'"
 
 class ErrorMessageData(MessageData):
     def __init__(self,error_type,error_string):
         self.error_type = error_type
         self.error_string = error_string
+    def __str__(self):
+        return f"error message '{self.error_string}'"
 
 class RequestImageMessageData(MessageData):
     def __init__(self,camera_id,image_type,image_size_preset):
         self.camera_id = camera_id
         self.image_type = image_type
         self.image_size_preset = image_size_preset
+    def __str__(self):
+        return f"image request message to camera {self.camera_id} of type {self.image_type} of size {self.image_size_preset}"
 
 class ImageMessageData(MessageData):
     def __init__(self,image_type,image_size_preset,image_bytes):
         self.image_type = image_type
         self.image_size_preset = image_size_preset
         self.image_bytes = image_bytes
+    def __str__(self):
+        return f"image message of type {self.image_type} of size {self.image_size_preset}"
 
 class Message:
     def __init__(self,type,version,count,data_length,data):
@@ -29,6 +37,8 @@ class Message:
         self.count = count
         self.data_length = data_length
         self.data = data
+    def __str__(self):
+        return f"message object: {self.data}"
 
 def parse_message(bytes):
     header_bytes = bytes[2:12] # first two bytes are for sync
