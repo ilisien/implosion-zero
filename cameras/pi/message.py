@@ -1,3 +1,5 @@
+from bin_tools import *
+
 class MessageData: # root message data class
     pass
 
@@ -31,12 +33,12 @@ class ImageMessageData(MessageData):
         return f"image message of type {self.image_type} of size {self.image_size_preset}"
 
 class Message:
-    def __init__(self,type,version,count,data_length,data):
+    def __init__(self,type,version,count,data):
         self.type = type
         self.version = version
         self.count = count
-        self.data_length = data_length
         self.data = data
+        self.bin_data, self.data_length = serialize_message_data(type,data)
     def __str__(self):
         return f"message object: {self.data}"
 
