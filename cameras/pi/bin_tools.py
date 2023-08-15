@@ -6,11 +6,6 @@ def int2bin(integer,nbytes=1):
 def str2bin(string):
     return string.encode('utf-8')
 
-def exbytes(bytes,newbytes):
-    for nbyte in newbytes:
-        bytes += newbytes
-    return bytes
-
 def serialize_message_data(message_type,data):
     if message_type == MessageType.UNICODE_MESSAGE.value:
         bin_data = [*str2bin(data.message_string)]
@@ -28,7 +23,6 @@ def serialize_message_data(message_type,data):
     return bin_data, bin_data_length
 
 def serialize_message(message):
-    message_packet = bytearray()
     message_packet = bytes([0b00000000, 0b11111111])
     header = [*str2bin(message.type),
               *int2bin(message.version),
