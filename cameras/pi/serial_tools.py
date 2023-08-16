@@ -11,8 +11,8 @@ def sync_index(byte_segment):
         return -1
 
 
-def serial_to_queue(ser,serial_queue):
-    while True:
+def serial_to_queue(ser,serial_queue,exit_tag):
+    while not exit_tag.is_set():
         if ser.in_waiting > 0:
             data = ser.read(ser.in_waiting)
             serial_queue.put(data)
@@ -71,11 +71,12 @@ def next_message(serial_queue,prev_remainder=None):
 
     return new_message, remaining_bytes
 
-def bytes_to_messages(serial_queue,message_queue):
+def bytes_to_messages(serial_queue,message_queue,exit_tag):
     remainder = None
-    while True:
-        message, remainder = next_message(serial_queue,remainder)
-        message_queue.put(message)
+    while not exit_tag.is_set():
+        if not serial_queue.empty():
+            message, remainder = next_message(serial_queue,remainder)
+            message_queue.put(message)
 
 class SerialConnection:
     def __init__(self,port,baud_rate,should_connect = True):
@@ -89,8 +90,6 @@ class SerialConnection:
             self.ser = None
         
         self.serial_queue = None
-        self.serial_thread = None
-        self.message_queue = None
         self.message_queue = None
     
     def connect(self):
@@ -125,17 +124,21 @@ class SerialConnection:
 
     def open_serial_queue(self):
         self.serial_queue = queue.Queue()
-        self.serial_thread = threading.Thread(target=serial_to_queue,args=(self.ser,self.serial_queue),daemon=True)
+        self.serial_thread_exit_tag = threading.Event()
+        self.serial_thread = threading.Thread(target=serial_to_queue,args=(self.ser,self.serial_queue,self.serial_thread_exit_tag,),daemon=True)
         self.serial_thread.start()
     
     def close_serial_queue(self):
-
+        self.serial_thread_exit_tag.set()
     
     def open_message_queue(self):
+        if self.serial_queue == None:
+            self.open_serial_queue()
         self.message_queue = queue.Queue()
-        self.message_thread = threading.Thread(target=bytes_to_messages)
+        self.message_thread_exit_tag = threading.Event()
+        self.message_thread = threading.Thread(target=bytes_to_messages,args=(self.serial_queue,self.message_queue,self.message_thread_exit_tag,))
+        self.message_thread.start()
     
-    def read_messages(self):
-        search_byte = None
-        while search_byte != 0b00000000:
-            search_byte = self.ser.read(1)
+    def close_message_thread(self):
+        self.serial_thread_exit_tag.set()
+        self.message_thread_exit_tag.set()
