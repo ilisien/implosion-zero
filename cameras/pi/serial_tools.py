@@ -19,8 +19,8 @@ def serial_to_queue(ser,serial_queue,exit_tag):
 
 def decode_header(header):
     sync_seq = header[0:2]
-    message_type = header[2].decode("utf-8")
-    message_version = int.from_bytes(header[3])
+    message_type = header[2:3].decode("utf-8")
+    message_version = int.from_bytes(header[3:4])
     message_count = int.from_bytes(header[4:8])
     data_length = int.from_bytes(header[8:12])
     return message_type, message_version, message_count, data_length
@@ -65,7 +65,7 @@ def next_message(serial_queue,prev_remainder=None):
     elif message_type == MessageType.IMAGE_MESSAGE.value:
         pass # todo, not really necessary on pi side yet though
 
-    new_message = Message(binary_header,message_type,message_version,message_count,message_data)
+    new_message = Message(message_type,message_version,message_count,message_data)
 
     remaining_bytes = byte_segment[head_end_ind+data_length:]
 

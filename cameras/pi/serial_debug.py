@@ -5,6 +5,7 @@ from serial_tools import SerialConnection
 
 ser_conn = SerialConnection("COM3",115200)
 ser_conn.open_message_queue()
-while True:
+for i in range(5):
     print(ser_conn.message_queue.get())
 
+ser_conn.close_message_thread()
