@@ -59,9 +59,12 @@ def next_message(serial_queue,prev_remainder=None):
     if message_type == MessageType.UNICODE_MESSAGE.value:
         message_data = UnicodeMessageData(binary_message_data.decode("utf-8"))
     elif message_type == MessageType.ERROR_MESSAGE.value:
-        pass # todo
+        message_data = ErrorMessageData(binary_message_data[0:1].decode("utf-8"),
+                                        binary_message_data[1:].decode("utf-8"))
     elif message_type == MessageType.REQUEST_IMAGE_MESSAGE.value:
-        pass # todo
+        message_data = RequestImageMessageData(int.from_bytes(binary_message_data[0:1]),
+                                               binary_message_data[1:2].decode("utf-8"),
+                                               binary_message_data[2:4].decode("utf-8"))
     elif message_type == MessageType.IMAGE_MESSAGE.value:
         pass # todo, not really necessary on pi side yet though
 
