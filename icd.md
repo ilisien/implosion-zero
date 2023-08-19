@@ -5,10 +5,10 @@ header for all serial messages
 | byte | format | section       | details                                          |
 | ---- | ------ | ------------- | ------------------------------------------------ |
 | 0,1  | raw    | sync seq      | "1", then "0" byte to sync start of message      |
-| 2    | char   | message type  | character defining the type of message           |
-| 3    | uint   | version       | version of message                               |
-| 4-7  | uint   | message count | total number of messages sent by this node       |
-| 8-11 | uint   | data length   | number of bytes to be looking for in the message |
+| 2    | char8  | message type  | character defining the type of message           |
+| 3    | uint8  | version       | version of message                               |
+| 4-7  | uint32 | message count | total number of messages sent by this node       |
+| 8-11 | uint32 | data length   | number of bytes to be looking for in the message |
 
 ## *messages*
 message types

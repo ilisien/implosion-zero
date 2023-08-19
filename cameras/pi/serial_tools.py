@@ -4,7 +4,7 @@ from globals import *
 from bin_tools import *
 
 def sync_index(byte_segment):
-    sync_sequence = bytes([0b00000000,0b11111111])
+    sync_sequence = bytes([0b11111111,0b00000000])
     try:
         return byte_segment.index(sync_sequence)
     except ValueError:
@@ -66,7 +66,9 @@ def next_message(serial_queue,prev_remainder=None):
                                                binary_message_data[1:2].decode("utf-8"),
                                                binary_message_data[2:4].decode("utf-8"))
     elif message_type == MessageType.IMAGE_MESSAGE.value:
-        pass # todo, not really necessary on pi side yet though
+        message_data = ImageMessageData(binary_message_data[0:1].decode("utf-8"),
+                                        binary_message_data[1:3].decode("utf-8"),
+                                        binary_message_data[3:])
 
     new_message = Message(message_type,message_version,message_count,message_data)
 
@@ -131,7 +133,7 @@ class SerialConnection:
         self.serial_thread = threading.Thread(target=serial_to_queue,args=(self.ser,self.serial_queue,self.serial_thread_exit_tag,),daemon=True)
         self.serial_thread.start()
     
-    def close_serial_queue(self):
+    def close_serial_thread(self):
         self.serial_thread_exit_tag.set()
     
     def open_message_queue(self):

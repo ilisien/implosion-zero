@@ -38,7 +38,11 @@ class Message:
         self.version = version
         self.count = count
         self.data = data
-        self.bin_data, self.data_length = serialize_message_data(type,data)
+        try:
+            self.bin_data, self.data_length = serialize_message_data(type,data)
+        except:
+            self.bin_data = None
+            self.data_length = None
     def __str__(self):
         return f"message object: {self.data}"
 

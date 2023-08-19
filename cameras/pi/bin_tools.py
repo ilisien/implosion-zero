@@ -23,7 +23,7 @@ def serialize_message_data(message_type,data):
     return bin_data, bin_data_length
 
 def serialize_message(message):
-    message_packet = bytes([0b00000000, 0b11111111])
+    message_packet = bytes([0b11111111, 0b00000000])
     header = [*str2bin(message.type),
               *int2bin(message.version),
               *int2bin(message.count,4),
